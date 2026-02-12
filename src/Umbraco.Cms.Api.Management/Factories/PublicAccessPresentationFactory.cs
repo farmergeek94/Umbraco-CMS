@@ -21,21 +21,18 @@ public class PublicAccessPresentationFactory : IPublicAccessPresentationFactory
     private readonly IUmbracoMapper _mapper;
     private readonly IMemberRoleManager _memberRoleManager;
     private readonly IMemberPresentationFactory _memberPresentationFactory;
-    private readonly IIdKeyMap _idKeyMap;
     public PublicAccessPresentationFactory(
         IEntityService entityService,
         IMemberService memberService,
         IUmbracoMapper mapper,
         IMemberRoleManager memberRoleManager,
-        IMemberPresentationFactory memberPresentationFactory,
-        IIdKeyMap idKeyMap)
+        IMemberPresentationFactory memberPresentationFactory)
     {
         _entityService = entityService;
         _memberService = memberService;
         _mapper = mapper;
         _memberRoleManager = memberRoleManager;
         _memberPresentationFactory = memberPresentationFactory;
-        _idKeyMap = idKeyMap;
     }
 
     public Attempt<PublicAccessResponseModel?, PublicAccessOperationStatus> CreatePublicAccessResponseModel(PublicAccessEntry entry, Guid contentKey)
