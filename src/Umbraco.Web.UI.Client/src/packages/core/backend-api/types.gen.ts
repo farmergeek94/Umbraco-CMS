@@ -2132,6 +2132,7 @@ export type PublicAccessResponseModel = {
     errorDocument: ReferenceByIdModel;
     members: Array<MemberItemResponseModel>;
     groups: Array<MemberGroupItemResponseModel>;
+    isProtectedByAncestor: boolean;
 };
 
 export type PublishDocumentRequestModel = {

@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -50,8 +50,10 @@ public class GetPublicAccessDocumentController : DocumentControllerBase
             return Forbidden();
         }
 
+        // Get the public access entry for the specified content ID
+        // Include ancestors in the lookup allowing for easier management of public access rules in the UI
         Attempt<PublicAccessEntry?, PublicAccessOperationStatus> accessAttempt =
-            await _publicAccessService.GetEntryByContentKeyWithoutAncestorsAsync(id);
+            await _publicAccessService.GetEntryByContentKeyAsync(id);
 
         if (accessAttempt.Success is false || accessAttempt.Result is null)
         {
@@ -59,7 +61,7 @@ public class GetPublicAccessDocumentController : DocumentControllerBase
         }
 
         Attempt<PublicAccessResponseModel?, PublicAccessOperationStatus> responseModelAttempt =
-            _publicAccessPresentationFactory.CreatePublicAccessResponseModel(accessAttempt.Result);
+            _publicAccessPresentationFactory.CreatePublicAccessResponseModel(accessAttempt.Result, id);
 
         if (responseModelAttempt.Success is false)
         {

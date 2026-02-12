@@ -53,6 +53,20 @@ public class UpdatePublicAccessDocumentController : DocumentControllerBase
 
         PublicAccessEntrySlim publicAccessEntrySlim = _publicAccessPresentationFactory.CreatePublicAccessEntrySlim(requestModel, id);
 
+        // Check if an entry already exists
+        Attempt<PublicAccessEntry?, PublicAccessOperationStatus> accessAttempt =
+            await _publicAccessService.GetEntryByContentKeyWithoutAncestorsAsync(id);
+
+        // If no entry exists, create a new one
+        if (accessAttempt.Success is false || accessAttempt.Result is null)
+        {
+            Attempt<PublicAccessEntry?, PublicAccessOperationStatus> saveAttempt = await _publicAccessService.CreateAsync(publicAccessEntrySlim);
+
+            return saveAttempt.Success
+                ? CreatedAtId<GetPublicAccessDocumentController>(controller => nameof(controller.GetPublicAccess), id)
+                : PublicAccessOperationStatusResult(saveAttempt.Status);
+        }
+
         Attempt<PublicAccessEntry?, PublicAccessOperationStatus> updateAttempt = await _publicAccessService.UpdateAsync(publicAccessEntrySlim);
 
         return updateAttempt.Success
