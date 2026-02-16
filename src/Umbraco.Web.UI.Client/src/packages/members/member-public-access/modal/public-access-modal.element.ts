@@ -100,7 +100,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 				return;
 			}
 
-			this.#isNew = false;
+			this.#isNew = data.isProtectedByAncestor;
 			this._startPage = false;
 
 			// Specific or Groups

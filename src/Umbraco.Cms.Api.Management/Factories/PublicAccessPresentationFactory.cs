@@ -36,6 +36,31 @@ public class PublicAccessPresentationFactory : IPublicAccessPresentationFactory
         _memberPresentationFactory = memberPresentationFactory;
     }
 
+    public Attempt<PublicAccessResponseModel?, PublicAccessOperationStatus> CreatePublicAccessResponseModel(PublicAccessEntry entry, Guid contentKey)
+    {
+        Attempt<Guid> protectedNodeKeyAttempt = _entityService.GetKey(entry.ProtectedNodeId, UmbracoObjectTypes.Document);
+
+        if (protectedNodeKeyAttempt.Success is false)
+        {
+            return Attempt.FailWithStatus<PublicAccessResponseModel?, PublicAccessOperationStatus>(PublicAccessOperationStatus.ContentNotFound, null);
+        }
+
+        Attempt<PublicAccessResponseModel?, PublicAccessOperationStatus> baseResponseAttempt = CreatePublicAccessResponseModel(entry);
+
+        if (baseResponseAttempt.Success is false)
+        {
+            return baseResponseAttempt;
+        }
+
+        if (protectedNodeKeyAttempt.Result.Equals(contentKey) is false && baseResponseAttempt.Result is not null)
+        {
+            baseResponseAttempt.Result.IsProtectedByAncestor = true;
+        }
+
+        return Attempt.SucceedWithStatus<PublicAccessResponseModel?, PublicAccessOperationStatus>(PublicAccessOperationStatus.Success, baseResponseAttempt.Result);
+    }
+
+    [Obsolete("Use the overload taking both PublicAccessEntry and contentKey. contentKey is required to determine if the entry is for the current content or an ancestor.")]
     public Attempt<PublicAccessResponseModel?, PublicAccessOperationStatus> CreatePublicAccessResponseModel(PublicAccessEntry entry)
     {
         Attempt<Guid> loginNodeKeyAttempt = _entityService.GetKey(entry.LoginNodeId, UmbracoObjectTypes.Document);
