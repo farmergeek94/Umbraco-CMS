@@ -88,8 +88,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 		if (!this.#unique) return;
 
 		try {
-			const { data, error } = await this.#publicAccessRepository.read(this.#unique);
-
+			const { data, error } = await this.#publicAccessRepository.read(this.#unique, true);
 			if (error) {
 				this._loadError = 'Failed to load public access settings';
 				return;

@@ -9368,6 +9368,14 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "includeAncestors",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
           }
         ],
         "responses": {
@@ -47220,6 +47228,7 @@
         "required": [
           "errorDocument",
           "groups",
+          "isProtectedByAncestor",
           "loginDocument",
           "members"
         ],
@@ -47258,6 +47267,9 @@
                 }
               ]
             }
+          },
+          "isProtectedByAncestor": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
