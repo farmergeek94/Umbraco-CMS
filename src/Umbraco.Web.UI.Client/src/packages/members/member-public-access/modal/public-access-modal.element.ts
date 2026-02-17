@@ -237,9 +237,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 
 	#renderAncestorWarning() {
 		return this.#isAncestor ? html`<uui-card id="warning">
-			<umb-localize key="publicAccess_paProtectedByAncestor" data-localize-missing="publicAccess_paProtectedByAncestor">
-				Public access settings are currently inherited from an ancestor page.
-			</umb-localize>
+			${this.localize.term('publicAccess_paProtectedByAncestor')}
 		</uui-card>` : nothing;
 	}
 
