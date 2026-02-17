@@ -6467,7 +6467,9 @@ export type GetDocumentByIdPublicAccessData = {
     path: {
         id: string;
     };
-    query?: never;
+    query?: {
+        includeAncestors?: boolean;
+    };
     url: '/umbraco/management/api/v1/document/{id}/public-access';
 };
 

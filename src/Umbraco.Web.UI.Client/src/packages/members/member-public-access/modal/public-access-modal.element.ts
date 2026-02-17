@@ -17,6 +17,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 	#publicAccessRepository = new UmbDocumentPublicAccessRepository(this);
 	#unique?: string;
 	#isNew: boolean = true;
+	#isAncestor: boolean = false;
 
 	@state()
 	private _documentName = '';
@@ -88,8 +89,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 		if (!this.#unique) return;
 
 		try {
-			const { data, error } = await this.#publicAccessRepository.read(this.#unique);
-
+			const { data, error } = await this.#publicAccessRepository.read(this.#unique, true);
 			if (error) {
 				this._loadError = 'Failed to load public access settings';
 				return;
@@ -101,6 +101,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 			}
 
 			this.#isNew = data.isProtectedByAncestor;
+			this.#isAncestor = data.isProtectedByAncestor;
 			this._startPage = false;
 
 			// Specific or Groups
@@ -231,6 +232,14 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 		return this._startPage ? this.renderSelectGroup() : this.renderEditPage();
 	}
 
+	#renderAncesetorWarning() {
+		return this.#isAncestor ? html`<uui-card id="warning">
+			<umb-localize key="publicAccess_paProtectedByAncestor" data-localize-missing="publicAccess_paProtectedByAncestor">
+				Public access settings are currently inherited from an ancestor page.
+			</umb-localize>
+		</uui-card>` : nothing;
+	}
+
 	// First page when no Restricting Public Access is set.
 	renderSelectGroup() {
 		return html`<umb-localize key="publicAccess_paHowWould" .args=${[this._documentName]}>
@@ -252,7 +261,9 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 
 	// Second page when editing Restricting Public Access
 	renderEditPage() {
-		return html`${this.renderMemberType()}
+		return html`
+			${this.#renderAncesetorWarning()}
+			${this.renderMemberType()}
 			<p>
 				<umb-localize key="publicAccess_paSelectPages">
 					Select the pages that contain login form and error messages
@@ -369,6 +380,12 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 
 			#error p {
 				margin: var(--uui-size-2) 0;
+			}
+
+			#warning {
+				margin-bottom: var(--uui-size-space-4);
+				 --uui-color-surface: var(--uui-color-warning);
+				  padding: var(--uui-size-space-1);
 			}
 		`,
 	];
