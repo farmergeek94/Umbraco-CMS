@@ -1,4 +1,4 @@
-﻿using Umbraco.Cms.Api.Management.ViewModels;
+using Umbraco.Cms.Api.Management.ViewModels;
 using Umbraco.Cms.Api.Management.ViewModels.Member.Item;
 using Umbraco.Cms.Api.Management.ViewModels.MemberGroup.Item;
 using Umbraco.Cms.Api.Management.ViewModels.PublicAccess;
@@ -36,6 +36,7 @@ public class PublicAccessPresentationFactory : IPublicAccessPresentationFactory
         _memberPresentationFactory = memberPresentationFactory;
     }
 
+    /// <inheritdoc/>
     public Attempt<PublicAccessResponseModel?, PublicAccessOperationStatus> CreatePublicAccessResponseModel(PublicAccessEntry entry, Guid contentKey)
     {
         Attempt<Guid> protectedNodeKeyAttempt = _entityService.GetKey(entry.ProtectedNodeId, UmbracoObjectTypes.Document);
@@ -45,7 +46,11 @@ public class PublicAccessPresentationFactory : IPublicAccessPresentationFactory
             return Attempt.FailWithStatus<PublicAccessResponseModel?, PublicAccessOperationStatus>(PublicAccessOperationStatus.ContentNotFound, null);
         }
 
+        // While the obsolete overload is still supported, let's use it.
+        // TODO (V18): Remove the obsolete overload and move its logic here.
+#pragma warning disable CS0618 // Type or member is obsolete
         Attempt<PublicAccessResponseModel?, PublicAccessOperationStatus> baseResponseAttempt = CreatePublicAccessResponseModel(entry);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         if (baseResponseAttempt.Success is false)
         {
@@ -60,7 +65,8 @@ public class PublicAccessPresentationFactory : IPublicAccessPresentationFactory
         return Attempt.SucceedWithStatus<PublicAccessResponseModel?, PublicAccessOperationStatus>(PublicAccessOperationStatus.Success, baseResponseAttempt.Result);
     }
 
-    [Obsolete("Use the overload taking both PublicAccessEntry and contentKey. contentKey is required to determine if the entry is for the current content or an ancestor.")]
+    /// <inheritdoc/>
+    [Obsolete("Plase use the overload taking all parameters. Scheduled for removal in Umbraco 19.")]
     public Attempt<PublicAccessResponseModel?, PublicAccessOperationStatus> CreatePublicAccessResponseModel(PublicAccessEntry entry)
     {
         Attempt<Guid> loginNodeKeyAttempt = _entityService.GetKey(entry.LoginNodeId, UmbracoObjectTypes.Document);

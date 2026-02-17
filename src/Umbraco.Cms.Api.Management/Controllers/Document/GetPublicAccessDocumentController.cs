@@ -50,11 +50,12 @@ public class GetPublicAccessDocumentController : DocumentControllerBase
             return Forbidden();
         }
 
-        // Get the public access entry for the specified content ID
-        // Include ancestors in the lookup allowing for easier management of public access rules in the UI
-        Attempt<PublicAccessEntry?, PublicAccessOperationStatus> accessAttempt = includeAncestors ?
-            await _publicAccessService.GetEntryByContentKeyAsync(id)
-            : await _publicAccessService.GetEntryByContentKeyWithoutAncestorsAsync(id);
+        // Get the public access entry for the specified content ID.
+        // If requested, include ancestors in the lookup allowing for easier management of public access rules in the UI.
+        Attempt<PublicAccessEntry?, PublicAccessOperationStatus> accessAttempt =
+            includeAncestors
+                ? await _publicAccessService.GetEntryByContentKeyAsync(id)
+                : await _publicAccessService.GetEntryByContentKeyWithoutAncestorsAsync(id);
 
         if (accessAttempt.Success is false || accessAttempt.Result is null)
         {
