@@ -14,6 +14,10 @@ using Umbraco.Extensions;
 
 namespace Umbraco.Cms.Api.Management.Factories;
 
+/// <summary>
+/// Default implementation of <see cref="IPublicAccessPresentationFactory"/> that converts
+/// <see cref="PublicAccessEntry"/> domain models to presentation response models and vice versa.
+/// </summary>
 public class PublicAccessPresentationFactory : IPublicAccessPresentationFactory
 {
     private readonly IEntityService _entityService;
@@ -22,6 +26,14 @@ public class PublicAccessPresentationFactory : IPublicAccessPresentationFactory
     private readonly IMemberRoleManager _memberRoleManager;
     private readonly IMemberPresentationFactory _memberPresentationFactory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PublicAccessPresentationFactory"/> class.
+    /// </summary>
+    /// <param name="entityService">The entity service for resolving entity keys.</param>
+    /// <param name="memberService">The member service for looking up members by username.</param>
+    /// <param name="mapper">The Umbraco mapper for mapping entities to response models.</param>
+    /// <param name="memberRoleManager">The member role manager for resolving member groups.</param>
+    /// <param name="memberPresentationFactory">The member presentation factory for creating member item response models.</param>
     public PublicAccessPresentationFactory(
         IEntityService entityService,
         IMemberService memberService,
@@ -121,6 +133,7 @@ public class PublicAccessPresentationFactory : IPublicAccessPresentationFactory
         return Attempt.SucceedWithStatus<PublicAccessResponseModel?, PublicAccessOperationStatus>(PublicAccessOperationStatus.Success, responseModel);
     }
 
+    /// <inheritdoc/>
     public PublicAccessEntrySlim CreatePublicAccessEntrySlim(PublicAccessRequestModel requestModel, Guid contentKey) =>
         new()
         {
