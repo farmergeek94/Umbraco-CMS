@@ -232,7 +232,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 		return this._startPage ? this.renderSelectGroup() : this.renderEditPage();
 	}
 
-	#renderAncesetorWarning() {
+	#renderAncestorWarning() {
 		return this.#isAncestor ? html`<uui-card id="warning">
 			<umb-localize key="publicAccess_paProtectedByAncestor" data-localize-missing="publicAccess_paProtectedByAncestor">
 				Public access settings are currently inherited from an ancestor page.
@@ -262,7 +262,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 	// Second page when editing Restricting Public Access
 	renderEditPage() {
 		return html`
-			${this.#renderAncesetorWarning()}
+			${this.#renderAncestorWarning()}
 			${this.renderMemberType()}
 			<p>
 				<umb-localize key="publicAccess_paSelectPages">
@@ -384,8 +384,8 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 
 			#warning {
 				margin-bottom: var(--uui-size-space-4);
-				 --uui-color-surface: var(--uui-color-warning);
-				  padding: var(--uui-size-space-1);
+					--uui-color-surface: var(--uui-color-warning);
+					padding: var(--uui-size-space-1);
 			}
 		`,
 	];
