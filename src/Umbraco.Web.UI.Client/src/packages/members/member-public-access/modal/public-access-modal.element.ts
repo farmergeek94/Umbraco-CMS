@@ -17,13 +17,15 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 	#publicAccessRepository = new UmbDocumentPublicAccessRepository(this);
 	#unique?: string;
 	#isNew: boolean = true;
-	#isAncestor: boolean = false;
 
 	@state()
 	private _documentName = '';
 
 	@state()
 	private _specific?: boolean;
+
+	@state()
+	private _initalSpecific?: boolean;
 
 	@state()
 	private _startPage = true;
@@ -104,11 +106,15 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 			// shows the inherit selection as a default for modification and uses create (not update)
 			// on save (because the child document doesn't have its own public access entry yet).
 			this.#isNew = data.isProtectedByAncestor;
-			this.#isAncestor = data.isProtectedByAncestor;
-			this._startPage = false;
+
+			// Show the start page if protection is inherited, otherwise show the edit page.
+			this._startPage = data.isProtectedByAncestor;
 
 			// Specific or Groups
 			this._specific = data.members.length > 0;
+
+			// preserve initial specific value allowing for clearing the selection when changed.
+			this._initalSpecific = this._specific;
 
 			//selection
 			if (data.members.length > 0) {
@@ -128,6 +134,10 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 	// Modal events
 
 	#handleNext() {
+		if(this._specific != this._initalSpecific) {
+			// Clear selection if changing between specific and groups as the selection is not compatible.
+			this._selection = [];
+		}
 		this._startPage = false;
 	}
 
@@ -212,7 +222,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 
 	override render() {
 		return html`
-			<umb-body-layout headline=${this.localize.term('actions_protect')}>
+			<umb-body-layout headline=${`${ this.#isNew ? this.localize.term('content_saveModalTitle') : this.localize.term('actions_update') } ${this.localize.term('actions_protect')}`}>
 				<uui-box>${this.#renderContent()}</uui-box> ${this.renderActions()}
 			</umb-body-layout>
 		`;
@@ -235,12 +245,6 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 		return this._startPage ? this.renderSelectGroup() : this.renderEditPage();
 	}
 
-	#renderAncestorWarning() {
-		return this.#isAncestor ? html`<uui-card id="warning">
-			${this.localize.term('publicAccess_paProtectedByAncestor')}
-		</uui-card>` : nothing;
-	}
-
 	// First page when no Restricting Public Access is set.
 	renderSelectGroup() {
 		return html`<umb-localize key="publicAccess_paHowWould" .args=${[this._documentName]}>
@@ -249,11 +253,11 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 			<uui-radio-group
 				@change=${(e: UUIRadioEvent) =>
 					e.target.value === 'members' ? (this._specific = true) : (this._specific = false)}>
-				<uui-radio label=${this.localize.term('publicAccess_paMembers')} value="members">
+				<uui-radio ?checked=${this._specific} label=${this.localize.term('publicAccess_paMembers')} value="members">
 					<strong>${this.localize.term('publicAccess_paMembers')}</strong><br />
 					${this.localize.term('publicAccess_paMembersHelp')}
 				</uui-radio>
-				<uui-radio label=${this.localize.term('publicAccess_paGroups')} value="groups">
+				<uui-radio ?checked=${!this._specific} label=${this.localize.term('publicAccess_paGroups')} value="groups">
 					<strong>${this.localize.term('publicAccess_paGroups')}</strong><br />
 					${this.localize.term('publicAccess_paGroupsHelp')}
 				</uui-radio>
@@ -262,9 +266,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 
 	// Second page when editing Restricting Public Access
 	renderEditPage() {
-		return html`
-			${this.#renderAncestorWarning()}
-			${this.renderMemberType()}
+		return html`${this.renderMemberType()}
 			<p>
 				<umb-localize key="publicAccess_paSelectPages">
 					Select the pages that contain login form and error messages
@@ -318,7 +320,7 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 					id="save"
 					look="primary"
 					color="positive"
-					label=${this.localize.term('buttons_save')}
+					label=${this.#isNew ? this.localize.term('buttons_save') : this.localize.term('actions_update')}
 					?disabled=${!this._loginDocumentId || !this._errorDocumentId || this._selection.length === 0}
 					@click="${this.#handleSave}"></uui-button>`
 			: html`<uui-button
