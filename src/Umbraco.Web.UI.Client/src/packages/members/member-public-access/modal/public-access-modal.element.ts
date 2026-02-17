@@ -100,6 +100,9 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 				return;
 			}
 
+			// When protection is inherited from an ancestor, treat this as a "new" entry so the dialog
+			// shows the inherit selection as a default for modification and uses create (not update)
+			// on save (because the child document doesn't have its own public access entry yet).
 			this.#isNew = data.isProtectedByAncestor;
 			this.#isAncestor = data.isProtectedByAncestor;
 			this._startPage = false;
