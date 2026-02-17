@@ -385,8 +385,8 @@ export class UmbPublicAccessModalElement extends UmbModalBaseElement<
 
 			#warning {
 				margin-bottom: var(--uui-size-space-4);
-					--uui-color-surface: var(--uui-color-warning);
-					padding: var(--uui-size-space-1);
+				--uui-color-surface: var(--uui-color-warning);
+				padding: var(--uui-size-space-1);
 			}
 		`,
 	];

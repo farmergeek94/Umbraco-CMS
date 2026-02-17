@@ -31,7 +31,7 @@ public interface IPublicAccessPresentationFactory
     /// </summary>
     /// <param name="entry">The public access entry.</param>
     /// <returns>An <see cref="Attempt{TResult, TStatus}"/> containing the response model or an error status.</returns>
-    [Obsolete("Plase use the overload taking all parameters. Scheduled for removal in Umbraco 19.")]
+    [Obsolete("Please use the overload taking all parameters. Scheduled for removal in Umbraco 19.")]
     Attempt<PublicAccessResponseModel?, PublicAccessOperationStatus> CreatePublicAccessResponseModel(PublicAccessEntry entry);
 
     /// <summary>
